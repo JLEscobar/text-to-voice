@@ -1,9 +1,60 @@
 import streamlit as st
+import os
+import time
+import glob
+import es
 import gTTS as gtts
 from PIL import Image
 st.title("Cambio texto a voz")
 
-st.header("En este espacio comiezo a desarrollar mis aplicaciones para interfaces multimodales")
-st.write("facilmente pudo realizar banked y fronted")
-image = Image.open("Avatar_belial.png")
+st.header("cambia tu texto a voz con esta pagina web")
+st.write("vas a poder escuchar tu texto")
+image = Image.open("jeff.jfif")
 
+st.image(image, caption='dile hola a tu viejo amigo jeff')
+
+try:
+    os.mkdir("temp")
+except:
+    pass
+  
+text = st.text_input("Ingrese el texto.")
+
+tld="es"
+
+def text_to_speech(text, tld):
+    
+    tts = gTTS(text,"es", tld, slow=False)
+    try:
+        my_file_name = text[0:20]
+    except:
+        my_file_name = "audio"
+    tts.save(f"temp/{my_file_name}.mp3")
+    return my_file_name, text
+  
+#display_output_text = st.checkbox("Verifica el texto")
+
+if st.button("convertir"):
+    result, output_text = text_to_speech(text, tld)
+    audio_file = open(f"temp/{result}.mp3", "rb")
+    audio_bytes = audio_file.read()
+    st.markdown(f"## Tú audio:")
+    st.audio(audio_bytes, format="audio/mp3", start_time=0)
+
+    #if display_output_text:
+    st.markdown(f"## Texto en audio:")
+    st.write(f" {output_text}")
+
+
+def remove_files(n):
+    mp3_files = glob.glob("temp/*mp3")
+    if len(mp3_files) != 0:
+        now = time.time()
+        n_days = n * 86400
+        for f in mp3_files:
+            if os.stat(f).st_mtime < now - n_days:
+                os.remove(f)
+                print("Deleted ", f)
+
+
+remove_files(7)
