@@ -2,7 +2,7 @@ import streamlit as st
 import os
 import time
 import glob
-import es
+import os
 import gTTS as gtts
 from PIL import Image
 st.title("Cambio texto a voz")
